@@ -11,6 +11,8 @@ provider:
       Action:
         - dynamodb:*
         - s3:*
+        - kinesis:*
+        - firehose:*
       Resource: "*"
 
 package:
@@ -36,6 +38,30 @@ functions:
 
 resources:  
   Resources:
+    FirehoseDeliveryRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: firehoseDeliveryRole
+        Path: /
+        AssumeRolePolicyDocument: 
+          Version: "2012-10-17"
+          Statement: 
+            - Effect: Allow
+              Principal:
+                Service:
+                  - firehose.amazonaws.com
+              Action: 
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: allow
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:*
+                  Resource: "*"
+      
     S3BucketAthena:
       Type: AWS::S3::Bucket
       Properties:
@@ -55,6 +81,7 @@ resources:
           WriteCapacityUnits: 10
         StreamSpecification:
           StreamViewType: NEW_IMAGE
+
     MessageDeliveryStream:
         Type: "AWS::KinesisFirehose::DeliveryStream"
         Properties: 
@@ -67,5 +94,10 @@ resources:
                 - Ref: S3BucketAthena
             BufferingHints: 
               IntervalInSeconds: "60"
-              SizeInMBs: "50"
+              SizeInMBs: "1"
             CompressionFormat: "UNCOMPRESSED"
+            Prefix: "Dynamo/"
+            RoleARN:
+              Fn::GetAtt: 
+                - "FirehoseDeliveryRole"
+                - "Arn"

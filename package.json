@@ -19,6 +19,7 @@
   "dependencies": {
     "aws-sdk": "^2.57.0",
     "serverless": "^1.22.0",
-    "node-uuid": "^1.4.8"
+    "node-uuid": "^1.4.8",
+    "firehoser": "^1.2.4"
   }
 }

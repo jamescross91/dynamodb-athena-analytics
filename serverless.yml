@@ -1,0 +1,47 @@
+service: dynamodb-athena-analytics
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  memorySize: 128
+  timeout: 300
+  region: eu-west-1
+
+functions:
+  produce:
+    handler: dynamo-producer.insert
+    events:
+      - schedule: rate(5 minute)
+
+resources:  
+  Resources:
+    DynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: dynamo-table-name
+        AttributeDefinitions:
+          - AttributeName: event_uuid
+            AttributeType: S
+        KeySchema:
+          - AttributeName: event_uuid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 10
+    DynamoDBIamPolicy:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTable
+      Properties:
+        PolicyName: lambda-dynamodb
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource: arn:aws:dynamodb:*:*:table/dynamo-table-name
+        Roles:
+          - Ref: IamRoleLambdaExecution

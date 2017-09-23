@@ -19,6 +19,8 @@ package:
   exclude:
     - node_modules/aws-sdk/**
     - node_modules/lodash/**
+    - node_mules/moment/**
+    - node_modules/crypto-browserify/**
 
 functions:
   produce:

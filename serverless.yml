@@ -36,7 +36,7 @@ functions:
             Fn::GetAtt:
               - DynamoDbTable
               - StreamArn
-          batchSize: 10
+          batchSize: 100
 
 resources:  
   Resources:
@@ -80,7 +80,7 @@ resources:
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
-          WriteCapacityUnits: 10
+          WriteCapacityUnits: 5
         StreamSpecification:
           StreamViewType: NEW_IMAGE
 

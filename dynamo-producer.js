@@ -9,7 +9,7 @@ aws.config.update({
 var docClient = new aws.DynamoDB.DocumentClient();
 
 module.exports.insert = (event, context, callback) => {
-  for(var i=0; i<100; i++) {
+  for(var i=0; i<1000; i++) {
     var params = {
           TableName: table,
           Item:{
